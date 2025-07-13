@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>NextGenSFMC Code Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  <script src="blocks.js"></script>
+  <script src="generator.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .dark .bg-white { background-color: #2d3748; }
+  </style>
+</head>
+<body class="dark:bg-gray-900 text-white">
+  <header class="bg-gradient-to-r from-purple-700 to-indigo-800 py-4 px-6 shadow">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">NextGenSFMC Code Tools</h1>
+      <a href="/" class="text-white hover:underline">🏠 Home</a>
+    </div>
+  </header>
+
+  <main class="p-4 h-[calc(100vh-4rem)]">
+    <div class="flex flex-col lg:flex-row gap-4 h-full">
+      <div id="blocklyDiv" class="flex-1 rounded bg-white" style="height: 100%; min-height: 300px;"></div>
+      <div class="flex-1 flex flex-col gap-2">
+        <div class="bg-white rounded p-2 h-1/2 overflow-auto">
+          <h2 class="text-lg font-semibold mb-2">Generated Code</h2>
+          <pre id="codePreview" class="text-sm text-black whitespace-pre-wrap"></pre>
+        </div>
+        <div class="bg-white rounded p-2 h-1/2 overflow-auto">
+          <h2 class="text-lg font-semibold mb-2">🧠 AI Suggestions</h2>
+          <div id="aiHint" class="text-sm text-gray-800">Hover over a block to see intelligent tips.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <xml id="toolbox" style="display: none">
+    <!-- Toolbox categories go here -->
+  </xml>
+
+  <script>
+    const workspace = Blockly.inject('blocklyDiv', {
+      toolbox: document.getElementById('toolbox')
+    });
+    function updateCode() {
+      const code = Blockly.JavaScript.workspaceToCode(workspace);
+      document.getElementById("codePreview").innerText = code;
+    }
+    workspace.addChangeListener(updateCode);
+
+    const hints = {
+      "ampscript_lookup": "Use Lookup() to retrieve values from a DE.",
+      "ssjs_write": "Write() outputs HTML to page.",
+      "api_httpget": "GET request to an API.",
+    };
+    workspace.addChangeListener(function(event) {
+      const topBlock = workspace.getTopBlocks(true)[0];
+      const type = topBlock ? topBlock.type : null;
+      document.getElementById("aiHint").innerText = hints[type] || "🧠 Drag a block to begin.";
+    });
+  </script>
+</body>
+</html>
